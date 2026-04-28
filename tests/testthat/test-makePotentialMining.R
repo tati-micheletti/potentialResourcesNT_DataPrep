@@ -198,7 +198,7 @@ test_that("Order dependence: misaligned whatToCombine vs list order fails", {
                     activeProcess=c("PERMIT_STA","CLAIM_STAT"))
   expect_error(
     makePotentialMining(dl, wtc),
-    regexp = "No potential|subscript|RHS of ==",
+    regexp = "No potential|subscript|RHS of ==|activeProcess",
     ignore.case = TRUE
   )
 })

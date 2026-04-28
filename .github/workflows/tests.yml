@@ -17,6 +17,7 @@ env:
   COVERAGE_MIN: 70
   HEAVY_TESTS: ""
   AGGREGATE_REPO: RonCatK/RonCatK-anthroDisturbance_Thesis
+  NOT_CRAN: true
   R_PROFILE_USER: /dev/null
   R_PROFILE: /dev/null
   R_ENVIRON_USER: /dev/null
@@ -30,6 +31,19 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: recursive
+
+      - name: Install system libs
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            libgdal-dev \
+            gdal-bin \
+            libgeos-dev \
+            libproj-dev \
+            libudunits2-dev \
+            libcurl4-openssl-dev \
+            libssl-dev \
+            libxml2-dev
 
       - name: Set mode
         run: |
@@ -56,22 +70,19 @@ jobs:
           RS
 
       - name: Install light dependencies
-        uses: r-lib/actions/setup-r-dependencies@v2
-        with:
-          extra-packages: |
-            any::covr
-            any::testthat
-            any::withr
-            any::terra
-            any::data.table
-            any::Require
-            any::mockery
-            any::DT
-            any::htmltools
-            any::htmlwidgets
-            any::qs
-            any::sf
-            any::xml2
+        run: |
+          Rscript --vanilla - <<'RS'
+          options(repos = c(CRAN = "https://packagemanager.posit.co/cran/__linux__/noble/2026-01-05"))
+          cran_packages <- c(
+            "covr", "testthat", "withr", "terra", "data.table",
+            "Require", "mockery", "DT", "htmltools", "htmlwidgets",
+            "qs", "sf", "xml2", "BH", "RApiSerialize", "Rcpp",
+            "RcppParallel", "stringfish", "stringi", "zip", "googledrive",
+            "rlang", "vctrs", "pillar", "purrr", "tibble"
+          )
+          missing <- cran_packages[!vapply(cran_packages, requireNamespace, logical(1), quietly = TRUE)]
+          if (length(missing)) install.packages(missing)
+          RS
 
       - name: Ensure Require present
         run: |
@@ -88,6 +99,7 @@ jobs:
           MODE=${MODE:-light}
           mkdir -p artifacts/tests/"$MODE"
           Rscript - <<'RS'
+          options(repos = c(CRAN = "https://packagemanager.posit.co/cran/__linux__/noble/2026-01-05"))
           suppressPackageStartupMessages({
             pkgs <- c(
               "covr", "DT", "htmltools", "htmlwidgets",
