@@ -23,12 +23,12 @@ defineModule(sim, list(
                                 comment = NULL)), 
                       class = "person"),  
   childModules = character(0),
-  version = list(potentialResourcesNT_DataPrep = "1.1.0"),
+  version = list(potentialResourcesNT_DataPrep = "1.0.0"),
   timeframe = as.POSIXlt(c(NA, NA)),
   timeunit = "year",
   citation = list("citation.bib"),
   documentation = list("README.md", "potentialResourcesNT_DataPrep.Rmd"), ## same file
-  reqdPkgs = list("SpaDES.core (>=1.0.10)", "ggplot2", "googledrive",
+  reqdPkgs = list("SpaDES.core (>=1.0.10)", "ggplot2", 
                   "PredictiveEcology/reproducible",
                   "raster", "terra", "crayon", "data.table", "RCurl",
                   "tictoc"),
@@ -71,7 +71,11 @@ defineModule(sim, list(
     defineParameter(".seed", "list", list(), NA, NA,
                     "Named list of seeds to use for each event (names)."),
     defineParameter(".useCache", "logical", FALSE, NA, NA,
-                    "Should caching of events or module be used?")
+                    "Should caching of events or module be used?"),
+    defineParameter("allowPre2011", "logical", FALSE, NA, NA,
+                    paste0("If TRUE, allows simulations whose start time is ",
+                           "before 2011. Intended for specialised validation ",
+                           "runs where pre-2011 baselines are available."))
   ),
   inputObjects = bindrows(
     expectsInput(objectName = "disturbanceList", objectClass = "list",
@@ -123,9 +127,11 @@ doEvent.potentialResourcesNT_DataPrep = function(sim, eventTime, eventType) {
     init = {
 
       # If the simulations start before 2011, it shouldn't work because of the data
-      if (start(sim) < 2011) stop(paste0("Please revisit your starting year for",
-                                         " the simulations. Simulations shouldn't ",
-                                         "start before 2011."))
+      if (start(sim) < 2011 && !isTRUE(P(sim)$allowPre2011)) {
+        stop(paste0("Please revisit your starting year for",
+                    " the simulations. Simulations shouldn't ",
+                    "start before 2011 (unless allowPre2011 = TRUE)."))
+      }
       # schedule future event(s)
       sim <- scheduleEvent(sim, start(sim), "potentialResourcesNT_DataPrep", "createPotentialMining", eventPriority = 3)
       sim <- scheduleEvent(sim, start(sim), "potentialResourcesNT_DataPrep", "createPotentialOilGas", eventPriority = 3)

@@ -10,18 +10,24 @@ makePotentialSeismicLines <- function(disturbanceList,
     return(NULL)
   } 
   
-  whichClaim <- laysToWork[unlist(lapply(laysToWork, function(L){
-    return(any(grepl(pattern = "OBJECTID", x = names(L))))
-  }))][[1]]
-  whichPotential <- laysToWork[unlist(lapply(laysToWork, function(L){
-    return(any(grepl(pattern = "Band_1", x = names(L)))) 
-  }))][[1]] # This used to be the layer C2H4_BCR6_NT1. I have no idea why terra/reproducible changed 
+  whichPotential <- disturbanceList[["oilGas"]][["potentialOilGas"]]
+  whichClaim <- disturbanceList[["oilGas"]][["claims"]]
+  
+  # Validate required fields exist
+  if (!"Band_1" %in% names(whichPotential)) {
+    stop("The potentialOilGas layer must have a field named 'Band_1'")
+  }
+  
+  # This used to be the layer C2H4_BCR6_NT1. I have no idea why terra/reproducible changed 
   # the name to Band_1. No time to find out... 
-  whichPotential[["Potential"]] <- as.numeric(whichPotential[["Band_1"]][[1]])+1
+  band_vals <- as.numeric(whichPotential$Band_1)  # Explicit vector extraction
+  whichPotential$Potential <- band_vals + 1
   whichPotential <- whichPotential[, "Potential"] #remove all names except potential
   
-  whichClaim[["Potential"]] <- as.numeric(max(whichPotential))+1 # Maximum potential is in already claimed areas
+  max_val <- max(whichPotential$Potential, na.rm = TRUE)
+  whichClaim$Potential <- max_val + 1 # Maximum potential is in already claimed areas
   whichClaim <- whichClaim[, "Potential"] #remove all names except potential
+  
   newPotentialOil <- rbind(whichPotential, whichClaim)
   return(newPotentialOil)
 }
