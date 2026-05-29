@@ -95,13 +95,13 @@ defineModule(sim, list(
                  desc = paste0("Study area to which the module should be ",
                                "constrained to. Defaults to NT1+BCR6. Object ",
                                "can be of class 'vect' from terra package"), 
-                 sourceURL = "https://drive.google.com/file/d/1RPfDeHujm-rUHGjmVs6oYjLKOKDF0x09/view?usp=sharing"),
+                 sourceURL = "https://zenodo.org/records/20434361/files/NT1_BCR6.zip"),
     expectsInput(objectName = "rasterToMatch", 
                  objectClass = "RasterLayer|rast", 
                  desc = paste0("All spatial outputs will be reprojected and ",
                                "resampled to it. Defaults to NT1+BCR6. Object ",
                                "can be of class 'rast' from terra package"), 
-                 sourceURL = "https://drive.google.com/file/d/11yCDc2_Wia2iw_kz0f0jOXrLpL8of2oM/view?usp=sharing")
+                 sourceURL = "https://zenodo.org/records/20434240/files/RTM_BCR6_NT1.tif")
   ),
   outputObjects = bindrows(
     createsOutput(objectName = "disturbanceList", objectClass = "list",
