@@ -89,7 +89,7 @@ defineModule(sim, list(
                                " processing. This  means that each combination ",
                                "of dataName and dataClass (except for 'potential')",
                                " will only have only one element."), 
-                 sourceURL = "https://drive.google.com/file/d/1v7MpENdhspkWxHPZMlmx9UPCGFYGbbYm/view?usp=sharing"),
+                 sourceURL = "https://zenodo.org/records/20628704/files/disturbanceList.zip"),
     expectsInput(objectName = "studyArea", 
                  objectClass = "SpatialPolygonDataFrame|vect", 
                  desc = paste0("Study area to which the module should be ",
