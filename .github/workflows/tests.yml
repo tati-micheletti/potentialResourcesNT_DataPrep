@@ -76,7 +76,7 @@ jobs:
           cran_packages <- c(
             "covr", "testthat", "withr", "terra", "data.table",
             "Require", "mockery", "DT", "htmltools", "htmlwidgets",
-            "qs", "sf", "xml2", "BH", "RApiSerialize", "Rcpp",
+            "sf", "xml2", "BH", "RApiSerialize", "Rcpp",
             "RcppParallel", "stringfish", "stringi", "zip", "googledrive",
             "rlang", "vctrs", "pillar", "purrr", "tibble"
           )
