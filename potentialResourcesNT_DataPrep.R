@@ -23,7 +23,7 @@ defineModule(sim, list(
                                 comment = NULL)), 
                       class = "person"),  
   childModules = character(0),
-  version = list(potentialResourcesNT_DataPrep = "1.0.0"),
+  version = list(potentialResourcesNT_DataPrep = "1.2.0"),
   timeframe = as.POSIXlt(c(NA, NA)),
   timeunit = "year",
   citation = list("citation.bib"),
