@@ -1,6 +1,13 @@
 makePotentialOilGas <- function(disturbanceList, 
                                 whatToCombine){
   
+  # whatToCombine selects no oilGas layers (e.g., it only combines mining layers): there is
+  # nothing to build, whether or not the study area has oil and gas disturbances
+  if (!"oilGas" %in% whatToCombine[["datasetName"]]){
+    message("No potential for oil and gas in the study area: whatToCombine selects no oilGas layers. Returning NULL")
+    return(NULL)
+  }
+
   laysToWork <- disturbanceList[["oilGas"]][names(disturbanceList[["oilGas"]]) %in% 
                                               whatToCombine[datasetName == "oilGas", 
                                                             dataClasses]]
@@ -55,12 +62,12 @@ makePotentialOilGas <- function(disturbanceList,
                     "creation but this was missed before. Please debug!"))
       } else {
         # !pot !claim
-        stop(paste0("No existing mining (i.e., claim ) disturbance NEITHER",
+        stop(paste0("No existing oil and gas disturbance NEITHER ",
                     "potential in the study area. At least one potential ",
                     "layer is necessary for the analysis. If you are supplying ",
-                    " potential layers, please keep this in mind. If you are ",
-                    "the deafult in the NT, your study area is outside of",
-                    "currently supported region for potential resources",
+                    "potential layers, please keep this in mind. If you are using ",
+                    "the default in the NT, your study area is outside of the ",
+                    "currently supported region for potential resources ",
                     "creation but this was missed before. Please debug!"))
       }
     }

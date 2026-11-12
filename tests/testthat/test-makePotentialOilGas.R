@@ -142,6 +142,47 @@ testthat::test_that("No matching layers selected by whatToCombine: function erro
   )
 })
 
+test_that("the error when no oilGas layer is selected names oil and gas, not mining", {
+  skip_on_cran()
+  mk_sq <- function(x0, y0, size = 1, crs = "EPSG:3857") {
+    terra::vect(
+      matrix(c(x0,y0, x0+size,y0, x0+size,y0+size, x0,y0+size, x0,y0),
+             ncol = 2, byrow = TRUE),
+      type = "polygons", crs = crs
+    )
+  }
+  dl  <- list(oilGas = list(potentialOilGas = mk_sq(0,0)))
+  wtc <- data.table(datasetName = "oilGas", dataClasses = "doesNotExist")
+
+  err <- tryCatch(makePotentialOilGas(dl, wtc), error = function(e) conditionMessage(e))
+  expect_match(err, "No existing oil and gas disturbance NEITHER potential in the study area.",
+               fixed = TRUE)
+  expect_no_match(err, "mining", fixed = TRUE)
+})
+
+test_that("whatToCombine selects no oilGas layers -> returns NULL with message", {
+  skip_on_cran()
+  # The study area has oilGas layers, but whatToCombine only combines mining layers
+  mk_sq <- function(x0, y0, size = 1, crs = "EPSG:3857") {
+    terra::vect(
+      matrix(c(x0,y0, x0+size,y0, x0+size,y0+size, x0,y0+size, x0,y0),
+             ncol = 2, byrow = TRUE),
+      type = "polygons", crs = crs
+    )
+  }
+  og <- mk_sq(0,0); og$TYPE <- "well"
+  dl  <- list(oilGas = list(oilGas = og, pipeline = mk_sq(1,1)))
+  wtc <- data.table(datasetName = "mining",
+                    dataClasses = c("potentialMiningClaims", "potentialMiningPermits"))
+
+  expect_message(
+    out <- makePotentialOilGas(dl, wtc),
+    regexp = "No potential for oil and gas in the study area",
+    ignore.case = TRUE
+  )
+  expect_null(out)
+})
+
 test_that("Missing oilGas sector -> returns NULL with message", {
   skip_on_cran()
   dl  <- list()  # no oilGas at all
